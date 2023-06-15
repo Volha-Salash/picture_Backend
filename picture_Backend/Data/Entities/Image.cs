@@ -1,3 +1,5 @@
+using System;
+
 namespace picture_Backend.Models
 {
     public class Image
@@ -6,7 +8,7 @@ namespace picture_Backend.Models
         public string Name { get; set; }
         public string Url { get; set; }
 
-        
-        public Image() { }
+        public List<Image> Images { get; set; } = new List<Image>();
+
     }
-    }
+}
