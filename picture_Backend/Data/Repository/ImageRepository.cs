@@ -20,8 +20,7 @@ public class ImageRepository : IImageRepository
 
   public async Task<Image> CreateImageAsync(ImageDto image)
         {
-            var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)"+
-                        "SELECT CAST(SCOPE_IDENTITY() as int)";
+            var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
 
             var parameters = new DynamicParameters();
             parameters.Add("Name", image.Name, DbType.String);
@@ -66,12 +65,11 @@ public class ImageRepository : IImageRepository
      
         public async Task UpdateImageAsync(int id, ImageDto image)
         {
-            var query = "UPDATE Images SET Name = @Name, WHERE Id = @Id";
+            var query = "UPDATE Images SET Name = @Name WHERE Id = @Id";
 
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Int32);
             parameters.Add("Name", image.Name, DbType.String);
-            parameters.Add("Url", image.Url, DbType.String);
 
             using var connection = _imageContext.CreateConnection();
 

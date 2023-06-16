@@ -35,12 +35,12 @@ namespace picture_Backend
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateImage(ImageDto imageDto)
+        public async Task<IActionResult> CreateImage(ImageDto image)
         {
             try
             {
-                var image = await this._imageRepository.CreateImageAsync(imageDto);
-                return CreatedAtRoute("ImageById", new { id = image.Id }, image);
+                var createdImage = await this._imageRepository.CreateImageAsync(image);
+                return CreatedAtRoute("ImageById", new { id = createdImage.Id }, createdImage);
             }
             catch (Exception ex)
             {
