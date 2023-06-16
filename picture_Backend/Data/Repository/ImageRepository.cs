@@ -4,6 +4,9 @@ using Dapper;
 using picture_Backend.Data.Context;
 using picture_Backend.Domain.Model;
 using picture_Backend.Models;
+using System.IO;
+using System.Reflection;
+using System.Text;
 
 
 namespace picture_Backend{
@@ -18,6 +21,45 @@ public class ImageRepository : IImageRepository
             _imageContext = imageContext;
         }
 
+    
+   /*     
+        public async Task<Image> CreateImageAsync(ImageDto imageDto)
+        {
+            if (string.IsNullOrWhiteSpace(imageDto.Data))
+                throw new ArgumentException("Image data is required", nameof(imageDto.Data));
+            
+            //byte[] dataBytes = Encoding.UTF8.GetBytes(image.Data);
+
+            var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", imageDto.Name, DbType.String);
+
+            var imagePath = @"C:\Users\volha.salash\Pictures/" + imageDto.Name;
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                var imageData = Convert.FromBase64String(imageDto.Data);
+                await fileStream.WriteAsync(imageData, 0, imageData.Length);
+            }
+            var imageUrl = "http://localhost/api/image/" + imageDto.Name;
+            parameters.Add("Url", imageUrl, DbType.String);
+
+            using var connection = _imageContext.CreateConnection();
+
+            var id = await connection.QuerySingleAsync<int>(query, parameters);
+
+            var createdImage = new Image
+            {
+                Id = id,
+                Name = imageDto.Name,
+                Url = imageUrl
+            };
+
+            return createdImage;
+        }
+        */
+
+/*
   public async Task<Image> CreateImageAsync(ImageDto image)
         {
             var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
@@ -39,6 +81,9 @@ public class ImageRepository : IImageRepository
 
             return createdImage;
         }  
+        
+  */
+
   
   public async Task<Image> GetImageByIdAsync(int id)
   {

@@ -10,7 +10,7 @@ namespace picture_Backend
         
             Task<IEnumerable<Image>> GetAllImagesAsync();
             Task<Image> GetImageByIdAsync(int id);
-            Task<Image> CreateImageAsync(ImageDto image);
+           // Task<Image> CreateImageAsync(ImageDto image);
             Task UpdateImageAsync(int id,ImageDto image);
           
        

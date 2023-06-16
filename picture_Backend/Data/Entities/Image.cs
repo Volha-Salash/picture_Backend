@@ -7,8 +7,9 @@ namespace picture_Backend.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
+        //public byte[] Data { get; set; }
 
-        public List<Image> Images { get; set; } = new List<Image>();
+        //public List<Image> Images { get; set; } = new List<Image>();
 
     }
 }
