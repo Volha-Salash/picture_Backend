@@ -9,16 +9,25 @@ using System.Reflection;
 using System.Text;
 
 
-namespace picture_Backend{
+namespace picture_Backend
+{
 
-public class ImageRepository : IImageRepository
- 
+    public class ImageRepository : IImageRepository
+
     {
         private readonly ImageContext _imageContext;
 
         public ImageRepository(ImageContext imageContext)
         {
             _imageContext = imageContext;
+        }
+
+        public async Task<IEnumerable<Image>> GetAllImagesAsync()
+        {
+            var query = "SELECT Id, Name, Url FROM Images";
+            using var con = _imageContext.CreateConnection();
+            var image = await con.QueryAsync<Image>(query);
+            return image.ToList();
         }
 
         public async Task CreateImage(ImageDto imageDto)
@@ -44,7 +53,47 @@ public class ImageRepository : IImageRepository
             }
         }
 
-   /*     
+        public async Task<Image> GetImageByIdAsync(int id)
+        {
+            var query = "SELECT Id, Name, Url FROM Images Where id=@id";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+
+            using var con = _imageContext.CreateConnection();
+
+
+            var image = await con.QueryFirstOrDefaultAsync<Image>(query, parameters);
+            return image;
+        }
+
+        public async Task UpdateImageName(int id, string newName)
+        {
+            using (var connection = _imageContext.CreateConnection())
+            {
+                var query = @"UPDATE Images SET Name = @NewName, Url = REPLACE(Url, @OldName, @NewName) WHERE Id = @Id";
+                var parameters = new { NewName = newName, OldName = GetImageName(id), Id = id };
+
+                await connection.ExecuteAsync(query, parameters);
+            }
+        }
+
+        private string GetImageName(int id)
+        {
+            using (var connection = _imageContext.CreateConnection())
+            {
+                var query = @"SELECT Name FROM Images WHERE Id = @Id";
+                var result = connection.Query<string>(query, new { Id = id }).FirstOrDefault();
+
+                return result;
+            }
+        }
+
+
+
+
+
+        /*     
         public async Task<Image> CreateImageAsync(ImageDto imageDto)
         {
             if (string.IsNullOrWhiteSpace(imageDto.Data))
@@ -105,44 +154,22 @@ public class ImageRepository : IImageRepository
         }  
         
   */
+        /*
+      public async Task UpdateImageAsync(int id, ImageDto image)
+      {
+          var query = "UPDATE Images SET Name = @Name WHERE Id = @Id";
+   
+          var parameters = new DynamicParameters();
+          parameters.Add("Id", id, DbType.Int32);
+          parameters.Add("Name", image.Name, DbType.String);
+   
+          using var connection = _imageContext.CreateConnection();
+   
+          await connection.ExecuteAsync(query, parameters);
+   
+      }
+      */
 
-  
-  public async Task<Image> GetImageByIdAsync(int id)
-  {
-      var query = "SELECT Id, Name, Url FROM Images Where id=@id";
 
-      var parameters = new DynamicParameters();
-      parameters.Add("Id", id, DbType.Int32);
-
-      using var con = _imageContext.CreateConnection();
-
-
-      var image = await con.QueryFirstOrDefaultAsync<Image>(query,parameters);
-      return image;
-  }
-
-       public async Task<IEnumerable<Image>> GetAllImagesAsync()
-        {
-            var query = "SELECT Id, Name, Url FROM Images";
-            using var con = _imageContext.CreateConnection();
-            var image = await con.QueryAsync<Image>(query);
-            return image.ToList();
-        }
-
-     
-        public async Task UpdateImageAsync(int id, ImageDto image)
-        {
-            var query = "UPDATE Images SET Name = @Name WHERE Id = @Id";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", id, DbType.Int32);
-            parameters.Add("Name", image.Name, DbType.String);
-
-            using var connection = _imageContext.CreateConnection();
-
-            await connection.ExecuteAsync(query, parameters);
-
-        }
-        
     }
 }

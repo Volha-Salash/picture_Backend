@@ -18,8 +18,8 @@ DROP TABLE dbo.Images
 CREATE TABLE dbo.Images
 (
     Id        INT    NOT NULL IDENTITY(1,1)  PRIMARY KEY, -- primary key column
-    Name      [NVARCHAR](45)  NOT NULL,
-    Url       [NVARCHAR](45)  NOT NULL
+    Name      [NVARCHAR](100)  NOT NULL,
+    Url       [NVARCHAR](1000)  NOT NULL
 );
 GO    
 

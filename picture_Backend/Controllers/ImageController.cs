@@ -46,6 +46,22 @@ namespace picture_Backend
             await _imageRepository.CreateImage(imageDto);
             return Ok();
         }
+        
+        
+        [HttpPut("updateName/{id}/{newName}")]
+        public async Task<IActionResult> UpdateImageName(int id, string newName)
+        {
+            var image = await _imageRepository.GetImageByIdAsync(id);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            await _imageRepository.UpdateImageName(id, newName);
+
+            return Ok();
+        }
     
 
         /*    [HttpPost]
@@ -96,42 +112,5 @@ namespace picture_Backend
            }
            */
        
-
-/*
-        [HttpPost]
-        public async Task<IActionResult> CreateImage(ImageDto image)
-        {
-            try
-            {
-                var createdImage = await this._imageRepository.CreateImageAsync(image);
-                return CreatedAtRoute("ImageById", new { id = createdImage.Id }, createdImage);
-            }
-            catch (Exception ex)
-            {
-                //log error
-                return StatusCode(500, ex.Message);
-            }
-        }
-        */
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateImage(int id, ImageDto image)
-        {
-            try
-            {
-                var dbImage = await _imageRepository.GetImageByIdAsync(id);
-                if (dbImage == null)
-                    return NotFound();
-
-                await _imageRepository.UpdateImageAsync(id, image);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                //log error
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-    }
+      }
 }
