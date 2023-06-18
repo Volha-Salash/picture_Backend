@@ -21,7 +21,29 @@ public class ImageRepository : IImageRepository
             _imageContext = imageContext;
         }
 
-    
+        public async Task CreateImage(ImageDto imageDto)
+        {
+            string name = Guid.NewGuid().ToString() + "_" + imageDto.Name;
+            var image = imageDto.Image;
+            var filePath = Path.Combine("wwwroot/images", image.FileName);
+
+            if (image.Length > 0)
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(fileStream);
+                }
+            }
+
+            using (var connection = _imageContext.CreateConnection())
+            {
+                var query = @"INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
+                var parameters = new { Name = name, Url = filePath };
+
+                await connection.ExecuteAsync(query, parameters);
+            }
+        }
+
    /*     
         public async Task<Image> CreateImageAsync(ImageDto imageDto)
         {
