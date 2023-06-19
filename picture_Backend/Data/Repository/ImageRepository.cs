@@ -34,7 +34,7 @@ namespace picture_Backend
         {
             string name = Guid.NewGuid().ToString() + "_" + imageDto.Name;
             var image = imageDto.Image;
-            var filePath = Path.Combine("wwwroot\\images", image.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", image.FileName);
 
             if (image.Length > 0)
             {
@@ -89,46 +89,59 @@ namespace picture_Backend
             }
         }
 
-
-
-
-
-        /*     
-        public async Task<Image> CreateImageAsync(ImageDto imageDto)
+        public async Task DeleteImage(int id)
         {
-            if (string.IsNullOrWhiteSpace(imageDto.Data))
-                throw new ArgumentException("Image data is required", nameof(imageDto.Data));
-            
-            //byte[] dataBytes = Encoding.UTF8.GetBytes(image.Data);
-
-            var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("Name", imageDto.Name, DbType.String);
-
-            var imagePath = @"C:\Users\volha.salash\Pictures/" + imageDto.Name;
-            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            using (var connection = _imageContext.CreateConnection())
             {
-                var imageData = Convert.FromBase64String(imageDto.Data);
-                await fileStream.WriteAsync(imageData, 0, imageData.Length);
+                var query = @"DELETE FROM Images WHERE Id = @Id";
+                var parameters = new { Id = id };
+
+                await connection.ExecuteAsync(query, parameters);
             }
-            var imageUrl = "http://localhost/api/image/" + imageDto.Name;
-            parameters.Add("Url", imageUrl, DbType.String);
-
-            using var connection = _imageContext.CreateConnection();
-
-            var id = await connection.QuerySingleAsync<int>(query, parameters);
-
-            var createdImage = new Image
-            {
-                Id = id,
-                Name = imageDto.Name,
-                Url = imageUrl
-            };
-
-            return createdImage;
         }
-        */
+    }
+}
+
+
+
+
+
+/*     
+public async Task<Image> CreateImageAsync(ImageDto imageDto)
+{
+    if (string.IsNullOrWhiteSpace(imageDto.Data))
+        throw new ArgumentException("Image data is required", nameof(imageDto.Data));
+    
+    //byte[] dataBytes = Encoding.UTF8.GetBytes(image.Data);
+
+    var query = "INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
+
+    var parameters = new DynamicParameters();
+    parameters.Add("Name", imageDto.Name, DbType.String);
+
+    var imagePath = @"C:\Users\volha.salash\Pictures/" + imageDto.Name;
+    using (var fileStream = new FileStream(imagePath, FileMode.Create))
+    {
+        var imageData = Convert.FromBase64String(imageDto.Data);
+        await fileStream.WriteAsync(imageData, 0, imageData.Length);
+    }
+    var imageUrl = "http://localhost/api/image/" + imageDto.Name;
+    parameters.Add("Url", imageUrl, DbType.String);
+
+    using var connection = _imageContext.CreateConnection();
+
+    var id = await connection.QuerySingleAsync<int>(query, parameters);
+
+    var createdImage = new Image
+    {
+        Id = id,
+        Name = imageDto.Name,
+        Url = imageUrl
+    };
+
+    return createdImage;
+}
+*/
 
 /*
   public async Task<Image> CreateImageAsync(ImageDto image)
@@ -169,7 +182,4 @@ namespace picture_Backend
    
       }
       */
-
-
-    }
-}
+      

@@ -62,6 +62,14 @@ namespace picture_Backend
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteImage([FromRoute] int id)
+        {
+            await _imageRepository.DeleteImage(id); 
+            
+            return Ok();
+        }
     
 
         /*    [HttpPost]

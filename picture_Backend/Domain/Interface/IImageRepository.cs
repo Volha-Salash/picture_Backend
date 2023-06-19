@@ -12,6 +12,7 @@ namespace picture_Backend
             Task<Image> GetImageByIdAsync(int id);
             Task CreateImage(ImageDto imageDto);
             Task UpdateImageName(int id, string newName);
+            Task DeleteImage(int id);
 
 
 
