@@ -34,7 +34,7 @@ namespace picture_Backend
         {
             string name = Guid.NewGuid().ToString() + "_" + imageDto.Name;
             var image = imageDto.Image;
-            var filePath = Path.Combine("wwwroot/images", image.FileName);
+            var filePath = Path.Combine("wwwroot\\images", image.FileName);
 
             if (image.Length > 0)
             {
