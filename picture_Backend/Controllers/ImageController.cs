@@ -15,7 +15,7 @@ namespace picture_Backend
     [ApiController]
     public class ImageController : ControllerBase
     {
-        
+
         private readonly IImageRepository _imageRepository;
 
         public ImageController(IImageRepository imageRepository)
@@ -39,15 +39,16 @@ namespace picture_Backend
 
             return Ok(image);
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> CreateImage([FromForm]ImageDto imageDto)
+        public async Task<IActionResult> CreateImage([FromForm] ImageDto imageDto)
         {
             await _imageRepository.CreateImage(imageDto);
             return Ok();
         }
-        
-        
+
+
+
         [HttpPut("updateName/{id}/{newName}")]
         public async Task<IActionResult> UpdateImageName(int id, string newName)
         {
@@ -66,59 +67,9 @@ namespace picture_Backend
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImage([FromRoute] int id)
         {
-            await _imageRepository.DeleteImage(id); 
-            
+            await _imageRepository.DeleteImage(id);
+
             return Ok();
         }
-    
-
-        /*    [HttpPost]
-            public string UploadImage([FromForm]IFormFile file)
-            {
-                try
-                {
-                    // getting file original name
-                    string FileName = file.FileName;
-    
-                    // combining GUID to create unique name before saving in wwwroot
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + FileName;
-    
-                    // getting full path inside wwwroot/images
-                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/", FileName);
-            
-                    // copying file
-                    file.CopyTo(new FileStream(imagePath, FileMode.Create));
-    
-                    return "File Uploaded Successfully";
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-            }
-            */
-        /*
-           [HttpPost]
-           public ActionResult Image([FromForm]ImageDto imageDto)
-           {
-               // Getting Name
-              // string name = imageDto.Name;
-               string name = Guid.NewGuid().ToString + "_" + imageDto.Name;
-               // Getting Image
-               var image = imageDto.Image;
-               
-               var filePath = Path.Combine("wwwroot/images", image.FileName);
-   
-               // Saving Image on Server
-               if (image.Length > 0) {
-                   using (var fileStream = new FileStream(filePath, FileMode.Create)) {
-                       image.CopyTo(fileStream);
-                   }
-               }
-   
-               return Ok(new { status = true, message = "image Posted Successfully"});
-           }
-           */
-       
-      }
-}
+    }
+    }

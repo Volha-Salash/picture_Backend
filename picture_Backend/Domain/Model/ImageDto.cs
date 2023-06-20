@@ -6,8 +6,6 @@ namespace picture_Backend.Domain.Model
     {
         public string Name { get; set; }
         public IFormFile Image { get; set; }
-       
-  
-        
+    
     }
 }

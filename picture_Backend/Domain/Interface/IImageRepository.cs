@@ -7,12 +7,12 @@ namespace picture_Backend
     public interface IImageRepository
     {
             // Task AddImageAsync(Image image);
-        
+
             Task<IEnumerable<Image>> GetAllImagesAsync();
             Task<Image> GetImageByIdAsync(int id);
             Task CreateImage(ImageDto imageDto);
             Task UpdateImageName(int id, string newName);
-            Task DeleteImage(int id);
+            Task<bool> DeleteImage(int id);
 
 
 
