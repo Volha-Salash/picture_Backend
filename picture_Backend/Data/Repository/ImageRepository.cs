@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 
 
+
 namespace picture_Backend
 {
 
@@ -34,7 +35,7 @@ namespace picture_Backend
         {
             string name = Guid.NewGuid().ToString() + "_" + imageDto.Name;
             var image = imageDto.Image;
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", image.FileName);
+            var filePath = Path.Combine(@"wwwroot\images", image.FileName);
 
             if (image.Length > 0)
             {
@@ -47,7 +48,7 @@ namespace picture_Backend
             using (var connection = _imageContext.CreateConnection())
             {
                 var query = @"INSERT INTO Images (Name, Url) VALUES (@Name, @Url)";
-                var parameters = new { Name = name, Url = filePath };
+                var parameters = new { Name = name, Url = "/images/" + image.FileName };
 
                 await connection.ExecuteAsync(query, parameters);
             }

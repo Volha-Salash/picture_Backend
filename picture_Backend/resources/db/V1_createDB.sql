@@ -31,6 +31,6 @@ INSERT INTO [dbo].[Images]
            ([Name]
            ,[Url])
      VALUES
-           ('169512d7-d92a-4ee0-877c-ad7cf8509832_zdhzh','wwwroot\images\AA151hvS.jpg')
+           ('169512d7-d92a-4ee0-877c-ad7cf8509832_zdhzh','/images/AA151hvS.jpg')
 GO
   
