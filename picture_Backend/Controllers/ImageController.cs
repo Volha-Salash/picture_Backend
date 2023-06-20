@@ -48,8 +48,7 @@ namespace picture_Backend
         }
 
 
-
-        [HttpPut("updateName/{id}/{newName}")]
+        [HttpPatch("updateName/{id}/{newName}")]
         public async Task<IActionResult> UpdateImageName(int id, string newName)
         {
             var image = await _imageRepository.GetImageByIdAsync(id);
@@ -72,4 +71,4 @@ namespace picture_Backend
             return Ok();
         }
     }
-    }
+}
