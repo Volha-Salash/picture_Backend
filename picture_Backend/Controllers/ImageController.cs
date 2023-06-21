@@ -35,7 +35,7 @@ namespace picture_Backend
         [HttpGet("{id}", Name = "imageById")]
         public async Task<IActionResult> GetImageById([FromRoute] int id)
         {
-            var image = await this._imageRepository.GetImageByIdAsync(id);
+            var image = await _imageRepository.GetImageByIdAsync(id);
 
             return Ok(image);
         }
@@ -43,8 +43,8 @@ namespace picture_Backend
         [HttpPost]
         public async Task<IActionResult> CreateImage([FromForm] ImageDto imageDto)
         {
-            await _imageRepository.CreateImage(imageDto);
-            return Ok();
+            var image = await _imageRepository.CreateImage(imageDto);
+            return new JsonResult(image);
         }
 
 
@@ -66,9 +66,17 @@ namespace picture_Backend
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImage([FromRoute] int id)
         {
-            await _imageRepository.DeleteImage(id);
 
-            return Ok();
+            var image = await _imageRepository.DeleteImage(id);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+            var images = await _imageRepository.GetAllImagesAsync();
+            
+            return Ok(images);
+        
         }
     }
 }

@@ -7,6 +7,7 @@ using picture_Backend.Models;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Azure.Core;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
 
@@ -23,6 +24,7 @@ namespace picture_Backend
             _imageContext = imageContext;
         }
 
+
         public async Task<IEnumerable<Image>> GetAllImagesAsync()
         {
             var connection = _imageContext.CreateConnection();
@@ -30,12 +32,12 @@ namespace picture_Backend
             return images;
         }
 
-        public async Task CreateImage(ImageDto imageDto)
+        public async Task<Image> CreateImage(ImageDto imageDto)
         {
             string name = $"{Guid.NewGuid()}_{imageDto.Name}";
             var image = imageDto.Image;
-            
-            var filePath = Path.Combine(@"wwwroot\images", image.FileName);
+
+            var filePath = Path.Combine(@"wwwroot\images", name);
             if (image.Length > 0)
             {
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -47,12 +49,16 @@ namespace picture_Backend
             var imageEntity = new Image
             {
                 Name = name,
-                Url = "/images/" + image.FileName
+                Url = "/images/" + name
             };
+
             var connection = _imageContext.CreateConnection();
             await connection.InsertAsync(imageEntity);
+
+            return imageEntity;
         }
-       
+
+
 
         public async Task<Image> GetImageByIdAsync(int id)
         {
@@ -60,7 +66,7 @@ namespace picture_Backend
             var image = await connection.GetAsync<Image>(id);
             return image;
         }
-       
+
 
         public async Task UpdateImageName(int id, string newName)
         {
@@ -73,19 +79,24 @@ namespace picture_Backend
             }
         }
 
-       
-        public async Task <bool> DeleteImage(int id)
+
+        public async Task<Image> DeleteImage(int id)
         {
             var connection = _imageContext.CreateConnection();
             var image = await connection.GetAsync<Image>(id);
+
             if (image != null)
             {
-                await connection.DeleteAsync(image);
-                
-                return true;
+                var success = await connection.DeleteAsync(image);
+
+                if (success)
+                {
+                    return image;
+                }
             }
 
-            return false;
+            return null;
         }
     }
 }
+

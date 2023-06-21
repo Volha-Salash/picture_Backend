@@ -15,4 +15,5 @@ namespace picture_Backend.Data.Context
         }
         public IDbConnection CreateConnection() => new SqlConnection(connectionStringOptions.SqlConnection);
     }
+    
 }

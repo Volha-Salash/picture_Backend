@@ -15,13 +15,13 @@ IF OBJECT_ID('dbo.Images', 'U') IS NOT NULL
 DROP TABLE dbo.Images
     GO
 -- Create the table in the specified schema
-CREATE TABLE dbo.Images
-(
-    Id        INT    NOT NULL IDENTITY(1,1)  PRIMARY KEY, -- primary key column
-    Name      [NVARCHAR](100)  NOT NULL,
-    Url       [NVARCHAR](1000)  NOT NULL
-);
-GO    
+ CREATE TABLE dbo.Images
+      (
+          Id        INT    NOT NULL IDENTITY(1,1)  PRIMARY KEY, -- primary key column
+          Name      [NVARCHAR](100)  NOT NULL,
+          Url       [NVARCHAR](1000)  NOT NULL
+      );
+GO   
 
 
 USE [PictureDB]

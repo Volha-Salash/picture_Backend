@@ -10,9 +10,9 @@ namespace picture_Backend
 
             Task<IEnumerable<Image>> GetAllImagesAsync();
             Task<Image> GetImageByIdAsync(int id);
-            Task CreateImage(ImageDto imageDto);
+            Task<Image> CreateImage(ImageDto imageDto);
             Task UpdateImageName(int id, string newName);
-            Task<bool> DeleteImage(int id);
+            Task<Image>  DeleteImage(int id);
 
 
 
