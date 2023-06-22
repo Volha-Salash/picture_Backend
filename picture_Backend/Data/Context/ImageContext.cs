@@ -5,7 +5,7 @@ using picture_Backend.Models;
 
 namespace picture_Backend.Data.Context
 {
-    public class ImageContext
+    public class ImageContext 
     {
         private ConnectionStringOptions connectionStringOptions;
 
