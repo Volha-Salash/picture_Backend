@@ -18,6 +18,7 @@ var configuration = new ConfigurationBuilder()
 // Add services to the container.
 builder.Services.AddSingleton<ImageContext>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
    .AddJwtBearer(options =>
@@ -32,7 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.Configure<ConnectionOptions>(builder.Configuration.GetSection("ConnectionStrings"));
+builder.Services.Configure<ConnectionStringOptions>(builder.Configuration.GetSection(ConnectionStringOptions.Position));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
