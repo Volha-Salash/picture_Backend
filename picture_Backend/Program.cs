@@ -1,35 +1,42 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using picture_Backend;
 using picture_Backend.Data.Context;
 using picture_Backend.Models;
-using Microsoft.IdentityModel.Tokens;
+using picture_Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
-   .AddJsonFile("appsettings.json")
+   .AddJsonFile("appsettings.json", true, true)
    .Build();
 
 // Add services to the container.
 builder.Services.AddSingleton<ImageContext>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+   options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+   options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
    .AddJwtBearer(options =>
-      options.TokenValidationParameters = new TokenValidationParameters
+   {
+      options.SaveToken = true;
+      options.RequireHttpsMetadata = false;
+      options.TokenValidationParameters = new TokenValidationParameters()
       {
-         ValidateIssuer = false,
-         ValidateAudience = false,
-         //ValidAudience = configuration["JWT:ValidAudience"],
-         //ValidIssuer = configuration["JWT:ValidIssuer"],
-         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr"))
-      });
+         ValidateIssuer = true,
+         ValidateAudience = true,
+         ValidAudience = configuration["JWT:ValidAudience"],
+         ValidIssuer = configuration["JWT:ValidIssuer"],
+         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+      };
+   });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -51,7 +58,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-//app.UseAuthentication();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
@@ -61,4 +68,3 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
-

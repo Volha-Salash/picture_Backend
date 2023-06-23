@@ -1,3 +1,4 @@
+using picture_Backend.Domain.Model;
 using picture_Backend.Models;
 
 namespace picture_Backend;
@@ -8,7 +9,12 @@ public interface IUserRepository
     //Task<User> GetByIdAsync(int id);
     //Task<User> GetByUsernameAsync(string username);
     Task<bool> RegisterAsync(string username, string password, string email);
-    Task<string> AuthenticateAsync(string username, string password);
+    //Task<string> AuthenticateAsync(string username, string password);
     Task<IEnumerable<User>> GetAllAsync();
+   
+    //Task<User> FindByUsernameOrEmail(string usernameOrEmail);
+    Task<User> FindByUsername(string username);
+    Task<User> FindByNameAsync(string username);
+    Task<User> FindByEmailAsync(string email);
 
 }

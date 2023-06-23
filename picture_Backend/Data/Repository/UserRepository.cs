@@ -1,10 +1,14 @@
 
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using picture_Backend;
 using picture_Backend.Data.Context;
 using picture_Backend.Domain.Model;
@@ -15,16 +19,21 @@ public class UserRepository : IUserRepository
 {
     private readonly ImageContext _dbConnection;
 
-    public UserRepository(ImageContext imageContext)
+    public UserRepository(ImageContext imageContext, IConfiguration configuration)
     {
         _dbConnection = imageContext;
+        _configuration = configuration;
     }
-    private readonly IPasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+    private readonly IConfiguration _configuration;
+    
 
+    private readonly IPasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+    /*
     public async Task<string> AuthenticateAsync(string username, string password)
     {
         var connection = _dbConnection.CreateConnection();
-        var user = await connection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Username = @Username", new { Username = username });
+        var user = await connection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Username = @Username", 
+            new { Username = username });
         if (user == null)
         {
             return null;
@@ -33,13 +42,79 @@ public class UserRepository : IUserRepository
         var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
         if (result != PasswordVerificationResult.Success)
         {
+            var loginDto = new UserDto
+            {
+                Username = user.Username,
+                Email = user.Email
+            };
+
+            var jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+            var token = jwtTokenGenerator.GenerateToken(loginDto);
+
+            return token;
+        }
+
+        return null;
+    }
+    */
+  
+    public async Task<User> FindByUsername(string username)
+    {
+        var connection = _dbConnection.CreateConnection();
+
+        var user = await connection.QueryFirstOrDefaultAsync<User>($"SELECT * FROM Users WHERE UserName = @Username", new { Username = username });
+
+        return user;
+    }
+    public async Task<User> FindByNameAsync(string username)
+    {
+        var connection = _dbConnection.CreateConnection();
+
+        var user = await connection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE UserName = @Username", new { Username = username });
+
+        return user;
+    }
+    public async Task<User> FindByEmailAsync(string email)
+    {
+        var connection = _dbConnection.CreateConnection();
+
+        var user = await connection.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Email = @Email", new { Email = email });
+
+        return user;
+    }
+
+
+    
+
+  /*  
+    public async Task <string> AuthenticateAsync(string username, string password) { 
+        var connection = _dbConnection.CreateConnection(); 
+        var user = await connection.QueryFirstOrDefaultAsync("SELECT * FROM Users WHERE Username = @Username", 
+            new { Username = username });
+        if (user == null)
+        {
             return null;
         }
 
-        var tokenGenerator = new JwtTokenGenerator("JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr");
+
+        var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+        if (result != PasswordVerificationResult.Success)
+        {
+            return null;
+        }
+
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+
+        var tokenGenerator = new JwtTokenGenerator(configuration);
         var token = tokenGenerator.GenerateToken(user.Id, user.Username);
         return token;
     }
+    
+/*
+   
+    */
     
     public async Task<bool> RegisterAsync(string username, string password, string email)
     {

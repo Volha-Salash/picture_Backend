@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using picture_Backend.Data.Context;
 using picture_Backend.Domain.Model;
 using picture_Backend.Models;
+using picture_Backend.Services;
 
 namespace picture_Backend.Controllers;
 
@@ -15,18 +16,20 @@ namespace picture_Backend.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuthenticationService _authenticationService;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IUserRepository userRepository, IAuthenticationService authenticationService)
     {
         _userRepository = userRepository;
+        _authenticationService = authenticationService;
     }
     
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto model)
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        var token = await _userRepository.AuthenticateAsync(model.Username, model.Password);
-
+        //var token = await _userRepository.AuthenticateAsync(model.Username, model.Password);
+        var token = await _authenticationService.Login(loginDto);
         if (token == null)
         {
             return Unauthorized();
