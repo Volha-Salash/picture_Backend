@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using picture_Backend.Data.Context;
@@ -7,7 +8,8 @@ using picture_Backend.Models;
 
 namespace picture_Backend.Controllers;
 
-
+//[Authorize]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
@@ -18,8 +20,9 @@ public class UserController : ControllerBase
     {
         _userRepository = userRepository;
     }
-
-    [HttpPost("login/")]
+    
+    [AllowAnonymous]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
         var token = await _userRepository.AuthenticateAsync(model.Username, model.Password);
@@ -34,7 +37,7 @@ public class UserController : ControllerBase
 
 
     [AllowAnonymous]
-    [HttpPost("register/")]
+    [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserDto userDto)
     {
         if (!ModelState.IsValid)
@@ -51,6 +54,14 @@ public class UserController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync()
+    {
+        var users = await _userRepository.GetAllAsync();
+
+        return Ok(users);
+
     }
 }
 

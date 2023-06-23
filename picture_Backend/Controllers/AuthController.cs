@@ -7,7 +7,7 @@ using picture_Backend.Domain.Model;
 using picture_Backend.Helpers;
 using picture_Backend.Models;
 
-
+/*
 namespace picture_Backend.Controllers;
 
 [ApiController]
@@ -43,3 +43,4 @@ public class AuthController : ControllerBase
         return token;
     }
 }
+*/

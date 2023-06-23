@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using picture_Backend.Domain.Model;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@ using picture_Backend.Models;
 
 namespace picture_Backend
 {
-    //[Route("api/images")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase

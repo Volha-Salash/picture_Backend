@@ -9,5 +9,6 @@ public interface IUserRepository
     //Task<User> GetByUsernameAsync(string username);
     Task<bool> RegisterAsync(string username, string password, string email);
     Task<string> AuthenticateAsync(string username, string password);
+    Task<IEnumerable<User>> GetAllAsync();
 
 }

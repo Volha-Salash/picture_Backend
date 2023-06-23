@@ -50,6 +50,13 @@ public class UserRepository : IUserRepository
         return rowsAffected == 1;
     }
     
+    public async Task<IEnumerable<User>> GetAllAsync()
+    { var connection = _dbConnection.CreateConnection();
+        var users = await connection.GetAllAsync<User>();
+        return users;
+    }
+
+    
 /*
     public async Task<User> GetByIdAsync(int id)
     {   var connection = _dbConnection.CreateConnection();

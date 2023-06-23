@@ -24,11 +24,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
    .AddJwtBearer(options =>
       options.TokenValidationParameters = new TokenValidationParameters
       {
-         ValidateIssuer = true,
-         ValidateAudience = true,
-         ValidAudience = configuration["JWT:ValidAudience"],
-         ValidIssuer = configuration["JWT:ValidIssuer"],
-         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+         ValidateIssuer = false,
+         ValidateAudience = false,
+         //ValidAudience = configuration["JWT:ValidAudience"],
+         //ValidIssuer = configuration["JWT:ValidIssuer"],
+         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr"))
       });
 
 builder.Services.AddControllers();
@@ -51,10 +51,14 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-app.UseAuthentication();
+//app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+   endpoints.MapControllers();
+});
 
 app.Run();
 
