@@ -1,4 +1,71 @@
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using Dapper;
+using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using picture_Backend;
+using picture_Backend.Data.Context;
+using picture_Backend.Domain.Model;
+using picture_Backend.Helpers;
+using picture_Backend.Models;
 
+public class UserRepository : IUserRepository
+{
+    private readonly ImageContext _dbConnection;
+    private readonly IPasswordHasher<User> _passwordHasher;
+    public UserRepository(ImageContext imageContext, IPasswordHasher<User> passwordHasher)
+    {
+        _dbConnection = imageContext;
+        _passwordHasher = passwordHasher;
+    }
+    
+    public async Task<bool> CreateAsync(string username, string password, string email)
+    {
+        var connection = _dbConnection.CreateConnection();
+        var hashedPassword = _passwordHasher.HashPassword(new User(), password);
+        var rowsAffected = await connection.ExecuteAsync("INSERT INTO Users (Username, Password, Email) VALUES (@Username, @Password, @Email)",
+            new { Username = username, Password = hashedPassword, Email = email });
+        return rowsAffected == 1;
+    }
+    
+    public async Task<User> FindByEmailAsync(string email)
+    {
+        var parameters = new { Email = email };
+        const string sql = "SELECT * FROM [Users] WHERE [Email] = UPPER(@Email)";
+        var connection = _dbConnection.CreateConnection();
+        
+        return await connection.QueryFirstOrDefaultAsync<User>(sql, parameters);
+    }
+    
+
+    public async Task<User> FindByNameAsync(string username)
+    {
+        var parameters = new { Username = username };
+        const string sql = "SELECT * FROM [Users] WHERE [Username] = UPPER(@Username)";
+        var connection = _dbConnection.CreateConnection();
+        return await connection.QueryFirstOrDefaultAsync<User>(sql, parameters);
+    }
+
+    public async Task<User> FindUserAsync(string usernameOrEmail)
+    {
+        var parameters = new { UserNameOrEmail = usernameOrEmail };
+        const string sql = "SELECT * FROM [Users] WHERE [Username] = UPPER(@UserNameOrEmail) OR [Email] = UPPER(@UserNameOrEmail)";
+        var connection = _dbConnection.CreateConnection();
+        return await connection.QueryFirstOrDefaultAsync<User>(sql, parameters);
+    }
+
+    public async Task<bool> CheckPasswordAsync(User user, string password)
+    {
+        var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+        return result == PasswordVerificationResult.Success;
+    }
+    
+}/*
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -57,7 +124,7 @@ public class UserRepository : IUserRepository
         return null;
     }
     */
-  
+/*  
     public async Task<User> FindByUsername(string username)
     {
         var connection = _dbConnection.CreateConnection();
@@ -115,7 +182,7 @@ public class UserRepository : IUserRepository
 /*
    
     */
-    
+    /*
     public async Task<bool> RegisterAsync(string username, string password, string email)
     {
         var connection = _dbConnection.CreateConnection();
@@ -172,5 +239,6 @@ public class UserRepository : IUserRepository
 
         return await _dbConnection.DeleteAsync(user);
     }
-    */
+    
 }
+*/

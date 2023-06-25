@@ -9,62 +9,39 @@ using picture_Backend.Services;
 
 namespace picture_Backend.Controllers;
 
-//[Authorize]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
     private readonly IAuthenticationService _authenticationService;
 
-    public UserController(IUserRepository userRepository, IAuthenticationService authenticationService)
+    public UserController(IAuthenticationService authenticationService)
     {
-        _userRepository = userRepository;
         _authenticationService = authenticationService;
     }
-    
+
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
-        //var token = await _userRepository.AuthenticateAsync(model.Username, model.Password);
-        var token = await _authenticationService.Login(loginDto);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
+        var response = await _authenticationService.Login(request);
 
-        return Ok(new { Token = token });
+        return Ok(response);
     }
-
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserDto userDto)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([FromBody] UserDto request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        var response = await _authenticationService.Register(request);
 
-        var isRegistered = await _userRepository.RegisterAsync(userDto.Username, userDto.Password, userDto.Email);
-        if (isRegistered)
-        {
-            return Ok();
-        }
-
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
-    {
-        var users = await _userRepository.GetAllAsync();
-
-        return Ok(users);
-
+        return Ok(response);
     }
 }
 

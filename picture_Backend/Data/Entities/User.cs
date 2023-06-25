@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace picture_Backend.Models;
 [Table("Users")]
-public class User : IdentityUser
+public class User
 {
     [Key]
     public int Id { get; set; }

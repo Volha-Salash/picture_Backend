@@ -8,7 +8,7 @@ public interface IUserRepository
     //Task<IEnumerable<User>> GetAllAsync();
     //Task<User> GetByIdAsync(int id);
     //Task<User> GetByUsernameAsync(string username);
-    Task<bool> RegisterAsync(string username, string password, string email);
+  /*  Task<bool> RegisterAsync(string username, string password, string email);
     //Task<string> AuthenticateAsync(string username, string password);
     Task<IEnumerable<User>> GetAllAsync();
    
@@ -16,5 +16,15 @@ public interface IUserRepository
     Task<User> FindByUsername(string username);
     Task<User> FindByNameAsync(string username);
     Task<User> FindByEmailAsync(string email);
+   */ 
+    
+    
+    
+  Task<bool> CreateAsync(string username, string password, string email); 
+    Task <User>FindByEmailAsync(string email); 
+    Task <User>FindByNameAsync(string username); 
+    Task <User>FindUserAsync(string usernameOrEmail); 
+    Task <bool>CheckPasswordAsync(User user, string password); 
 
 }
+
