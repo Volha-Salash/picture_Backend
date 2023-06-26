@@ -70,7 +70,7 @@ private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
     var token = new JwtSecurityToken(
         issuer: _configuration["JWT:ValidIssuer"],
         audience: _configuration["JWT:ValidAudience"],
-        expires: DateTime.Now.AddDays(3),
+        expires: DateTime.Now.AddMinutes(15),
         claims: authClaims,
         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
