@@ -59,11 +59,9 @@ app.UseStaticFiles(new StaticFileOptions
    RequestPath = "/images"
 });
 
-app.UseRouting();
 app.UseAuthentication();
-
+app.UseRouting();
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints =>
 {
    endpoints.MapControllers();

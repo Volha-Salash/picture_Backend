@@ -57,7 +57,9 @@ public async Task<string> Login(LoginDto request)
     };
 
     var token = GetToken(authClaims);
-    VerifyToken(token.ToString());
+    
+    VerifyToken(token);
+
     return new JwtSecurityTokenHandler().WriteToken(token);
 }
 
@@ -68,15 +70,39 @@ private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
     var token = new JwtSecurityToken(
         issuer: _configuration["JWT:ValidIssuer"],
         audience: _configuration["JWT:ValidAudience"],
-        expires: DateTime.Now.AddHours(3),
+        expires: DateTime.Now.AddDays(3),
         claims: authClaims,
         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
     return token;
     
 }
-
-public async Task<string> VerifyToken(string tokenString)
+private async Task VerifyToken(JwtSecurityToken token)
+{
+    try
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"])),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ClockSkew = TimeSpan.Zero
+        };
+        
+        SecurityToken validatedToken;
+        ClaimsPrincipal claimsPrincipal = handler.ValidateToken(token.RawData, validationParameters, out validatedToken);
+        Console.WriteLine("Token is valid");
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine("Token validation failed: " + ex.Message);
+       
+    }
+}
+/*
+private async Task<ClaimsPrincipal> VerifyToken(string tokenString)
 {
    
     var tokenValidationParameters = new TokenValidationParameters
@@ -91,13 +117,11 @@ public async Task<string> VerifyToken(string tokenString)
 
     try
     {
-        
         var tokenHandler = new JwtSecurityTokenHandler();
         var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out var validToken);
 
-       
         Console.WriteLine("Token is valid");
-        return claimsPrincipal.Identity.Name;
+        return claimsPrincipal;
     }
     catch(Exception ex)
     {
@@ -105,5 +129,6 @@ public async Task<string> VerifyToken(string tokenString)
         return null;
     }
 }
+*/
 
 }
