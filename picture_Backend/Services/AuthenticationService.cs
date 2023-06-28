@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using picture_Backend.Domain.Model;
 using picture_Backend.Models;
@@ -39,7 +40,31 @@ public class AuthenticationService : IAuthenticationService
 
         return await Login(new LoginDto { Username = request.Username, Password = request.Password });
     }
+    
+public async Task<string> Login(LoginDto request)
+{
+    var user = await _userRepository.FindUserAsync(request.Username);
 
+    if (user is null || !await _userRepository.CheckPasswordAsync(user, request.Password))
+    {
+        throw new ArgumentException($"Unable to authenticate user {request.Username}");
+    }
+
+    var authClaims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+    var token = GetToken(authClaims);
+
+    VerifyToken(token);
+
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
+
+/*
 public async Task<string> Login(LoginDto request)
 {
     var user = await _userRepository.FindUserAsync(request.Username);
@@ -62,6 +87,7 @@ public async Task<string> Login(LoginDto request)
 
     return new JwtSecurityTokenHandler().WriteToken(token);
 }
+*/
 
 private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
 {

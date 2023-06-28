@@ -27,9 +27,9 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
-        var response = await _authenticationService.Login(request);
+        var token = await _authenticationService.Login(request);
 
-        return Ok(response);
+        return Ok(new { token });
     }
 
     [AllowAnonymous]
