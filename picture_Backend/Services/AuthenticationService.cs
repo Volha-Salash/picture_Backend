@@ -70,7 +70,7 @@ private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
     var token = new JwtSecurityToken(
         issuer: _configuration["JWT:ValidIssuer"],
         audience: _configuration["JWT:ValidAudience"],
-        expires: DateTime.Now.AddMinutes(15),
+        expires: DateTime.Now.AddMinutes(30),
         claims: authClaims,
         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
@@ -97,7 +97,7 @@ private async Task VerifyToken(JwtSecurityToken token)
     }
     catch(Exception ex)
     {
-        Console.WriteLine("Token validation failed: " + ex.Message);
+      //  Console.WriteLine("Token validation failed: " + ex.Message);
        
     }
 }
