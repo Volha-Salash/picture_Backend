@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using picture_Backend;
 using picture_Backend.Data.Context;
 using picture_Backend.Domain.Model;
-using picture_Backend.Helpers;
 using picture_Backend.Models;
 
 public class UserRepository : IUserRepository
