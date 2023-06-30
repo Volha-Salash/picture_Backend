@@ -3,12 +3,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using picture_Backend.Domain.Model;
 using picture_Backend.Models;
-
+/*
 namespace picture_Backend.Services;
 
 public class AuthenticationService : IAuthenticationService
@@ -41,120 +42,31 @@ public class AuthenticationService : IAuthenticationService
         return await Login(new LoginDto { Username = request.Username, Password = request.Password });
     }
     
-public async Task<string> Login(LoginDto request)
-{
-    var user = await _userRepository.FindUserAsync(request.Username);
-
-    if (user is null || !await _userRepository.CheckPasswordAsync(user, request.Password))
-    {
-        throw new ArgumentException($"Unable to authenticate user {request.Username}");
-    }
-
-    var authClaims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
-
-    var token = GetToken(authClaims);
-
-    VerifyToken(token);
-
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
-
-/*
-public async Task<string> Login(LoginDto request)
-{
-    var user = await _userRepository.FindUserAsync(request.Username);
-
-    if(user is null || !await _userRepository.CheckPasswordAsync(user, request.Password))
-    {
-        throw new ArgumentException($"Unable to authenticate user {request.Username}");
-    }
-
-    var authClaims = new List<Claim>
-    {   new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        
-    };
-
-    var token = GetToken(authClaims);
-    
-    VerifyToken(token);
-
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
-*/
-
-private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
-{
-    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-    var token = new JwtSecurityToken(
-        issuer: _configuration["JWT:ValidIssuer"],
-        audience: _configuration["JWT:ValidAudience"],
-        expires: DateTime.Now.AddMinutes(30),
-        claims: authClaims,
-        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
-
-    return token;
-    
-}
-private async Task VerifyToken(JwtSecurityToken token)
-{
-    try
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"])),
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ClockSkew = TimeSpan.Zero
-        };
-        
-        SecurityToken validatedToken;
-        ClaimsPrincipal claimsPrincipal = handler.ValidateToken(token.RawData, validationParameters, out validatedToken);
-        Console.WriteLine("Token is valid");
-    }
-    catch(Exception ex)
-    {
-      //  Console.WriteLine("Token validation failed: " + ex.Message);
-       
-    }
-}
-/*
-private async Task<ClaimsPrincipal> VerifyToken(string tokenString)
-{
    
-    var tokenValidationParameters = new TokenValidationParameters
+    public async Task<string> Login(LoginDto request)
     {
-        ValidateIssuer = true,
-        ValidIssuer = _configuration["JWT:ValidIssuer"],
-        ValidateAudience = true,
-        ValidAudience = _configuration["JWT:ValidAudience"],
-        ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]))
-    };
+        var user = await _userRepository.FindUserAsync(request.Username);
 
-    try
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out var validToken);
+        if (user is null || !await _userRepository.CheckPasswordAsync(user, request.Password))
+        {
+            throw new ArgumentException($"Unable to authenticate user {request.Username}");
+        }
 
-        Console.WriteLine("Token is valid");
-        return claimsPrincipal;
+        var authClaims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+        };
+
+        var identity = new ClaimsIdentity(authClaims, "UserAuthentication");
+
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return user.Username;
     }
-    catch(Exception ex)
-    {
-        Console.WriteLine("Token validation failed: " + ex.Message);
-        return null;
-    }
+
 }
 */
-
-}

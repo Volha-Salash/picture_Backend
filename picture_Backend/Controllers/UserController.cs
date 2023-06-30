@@ -27,9 +27,17 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
-        var token = await _authenticationService.Login(request);
+        var user = await _authenticationService.Login(request);
 
-        return Ok(new { token });
+        if (user == null)
+        {
+            return BadRequest("Invalid username or password");
+        }
+
+        
+        Response.Cookies.Append("userId", user.username.ToString());
+
+        return Ok();
     }
 
     [AllowAnonymous]
@@ -39,9 +47,17 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] UserDto request)
     {
-        var response = await _authenticationService.Register(request);
+        var user = await _authenticationService.Register(request);
 
-        return Ok(response);
+        if (user == null)
+        {
+            return BadRequest("Failed to register user");
+        }
+
+        // Creating a new cookie with name "userId" and value as the user's ID
+        Response.Cookies.Append("userId", user.Id.ToString());
+
+        return Ok();
     }
 }
 
@@ -57,70 +73,4 @@ public class UserController : ControllerBase
 }
  * 
  */
-   /*
-    [AllowAnonymous]
-    [HttpPost("register/")]
-    public async Task<ActionResult<UserDto>> RegisterUser(UserDto userDto)
-    {  
-        var config = new MapperConfiguration(cfg => cfg
-            .CreateMap<UserDto, User>());
-        var mapper = new Mapper(config); 
-        var user = mapper.Map<User>(userDto);
-        var createdUser = await _userRepository.RegisterAsync(user);
-
-        if (createdUser == null)
-        {
-            return BadRequest();
-        }
-        var createdUserDto = mapper.Map<UserDto>(createdUser);
-        var id = createdUser.Id;
-
-        return CreatedAtAction(nameof(GetUserById), new { id }, createdUserDto);
-    
-    }
-    */
-
- /*   [AllowAnonymous]
-    [HttpPost("register/")]
-    public async Task<ActionResult<UserDto>> RegisterUser(UserDto userDto)
-    {  
-        var config = new MapperConfiguration(cfg => cfg
-            .CreateMap<UserDto, User>());
-        var mapper = new Mapper(config); 
-        var user = mapper.Map<User>(userDto);
-        var createdUser = await _userRepository.RegisterAsync(user);
-        if (createdUser == null)
-        {
-            return BadRequest();
-        }
-
-        return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
-    }
-    
-   
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUserById(int id)
-    {
-        var user = await _userRepository.GetByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(user);
-    }
-
-    [HttpGet("username/{username}")]
-    public async Task<ActionResult<UserDto>> GetUserByUsername(string username)
-    {
-        var user = await _userRepository.GetByUsernameAsync(username);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(user);
-    }
-    
-}
-*/
+  

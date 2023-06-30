@@ -11,7 +11,7 @@ using picture_Backend.Models;
 
 namespace picture_Backend
 {
-    
+    [Authorize]    
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase

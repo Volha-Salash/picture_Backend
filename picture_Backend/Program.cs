@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
@@ -17,27 +18,16 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddSingleton<ImageContext>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddAuthentication(options =>
-{
-   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-   options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-   options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-   .AddJwtBearer(options =>
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+   .AddCookie(options =>
    {
-      options.SaveToken = true;
-      options.RequireHttpsMetadata = false;
-      options.TokenValidationParameters = new TokenValidationParameters()
-      {
-         ValidateIssuer = true,
-         ValidateAudience = true,
-         ValidAudience = configuration["JWT:ValidAudience"],
-         ValidIssuer = configuration["JWT:ValidIssuer"],
-         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-      };
+      options.Cookie.Name = "YourCookieName"; // Название куки
+      options.Cookie.HttpOnly = true; // Запретить доступ к кукам из JavaScript
+      options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Время жизни куки
+      options.LoginPath = "/user/login"; // Путь к странице входа
    });
 builder.Services.AddCors();
 builder.Services.AddControllers();
@@ -54,6 +44,7 @@ if (app.Environment.IsDevelopment())
       .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader());
+   
 }
 
 app.UseHttpsRedirection();
