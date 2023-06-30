@@ -41,7 +41,7 @@ public class UserController : ControllerBase
     {
         var response = await _authenticationService.Register(request);
 
-        return Ok(response);
+        return Ok(new { response });
     }
 }
 
